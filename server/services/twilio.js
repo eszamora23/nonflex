@@ -6,8 +6,7 @@ const twilio = require('twilio');
  * @returns {Object} Object containing the Twilio client instance.
  */
 function makeTwilioClients(tenant = {}) {
-  const accountSid = tenant.twilioAccountSid || tenant.accountSid;
-  const authToken = tenant.twilioAuthToken || tenant.authToken;
+  const { accountSid, authToken } = tenant.twilio || {};
 
   if (!accountSid || !authToken) {
     throw new Error('Twilio credentials are not configured for tenant');

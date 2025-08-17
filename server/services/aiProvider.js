@@ -2,7 +2,7 @@ const OpenAI = require('openai');
 const CRM = require('./crm');
 
 function getClient(tenant = {}) {
-  const apiKey = tenant.openaiApiKey || process.env.OPENAI_API_KEY;
+  const apiKey = tenant.ai?.openaiApiKey;
   if (!apiKey) {
     throw new Error('OpenAI API key is not configured');
   }

@@ -5,7 +5,7 @@ const twilio = require('twilio');
  * X-Twilio-Signature header and the tenant's auth token.
  */
 function verifyTwilioSignature(req, res, next) {
-  const token = req.tenant?.twilioAuthToken || req.tenant?.authToken || process.env.TWILIO_AUTH_TOKEN;
+  const token = req.tenant?.twilio?.authToken;
   if (!token) {
     return res.status(500).send('Twilio auth token not configured');
   }

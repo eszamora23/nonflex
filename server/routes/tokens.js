@@ -6,9 +6,7 @@ const router = express.Router();
 router.post('/', (req, res, next) => {
   const { identity, room, serviceSid } = req.body;
   try {
-    const accountSid = req.tenant?.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID;
-    const apiKey = req.tenant?.twilioApiKey || process.env.TWILIO_API_KEY;
-    const apiSecret = req.tenant?.twilioApiSecret || process.env.TWILIO_API_SECRET;
+    const { accountSid, apiKey, apiSecret, conversationsServiceSid } = req.tenant?.twilio || {};
 
     if (!identity || !accountSid || !apiKey || !apiSecret) {
       return res.status(400).json({ error: 'Missing credentials or identity' });
@@ -17,9 +15,10 @@ router.post('/', (req, res, next) => {
     const AccessToken = twilio.jwt.AccessToken;
     const token = new AccessToken(accountSid, apiKey, apiSecret, { identity });
 
-    if (serviceSid) {
+    const chatSid = serviceSid || conversationsServiceSid;
+    if (chatSid) {
       const ChatGrant = AccessToken.ChatGrant;
-      token.addGrant(new ChatGrant({ serviceSid }));
+      token.addGrant(new ChatGrant({ serviceSid: chatSid }));
     }
 
     if (room) {

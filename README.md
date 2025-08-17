@@ -13,7 +13,7 @@ own flexible customer‑care platform.
 - Node.js + Express service exposing routes for agents, customers, tasks, AI and
   Twilio webhooks.
 - Middleware `tenantResolver` reads an `X-Tenant-Id` header and attaches
-  tenant configuration from `infra/tenants.json`.
+  tenant configuration from `infra/tenants.json`, including `twilio` and optional `ai` sections.
 - Connects to MongoDB, Redis, external CRM and Twilio APIs.
 
 ### Frontend (`client/`)
@@ -27,8 +27,7 @@ own flexible customer‑care platform.
 ### Multi-tenant approach
 - Tenants are defined in `infra/tenants.json`.
 - API requests include an `X-Tenant-Id` header to select the tenant.
-- Each tenant can supply unique CRM and Twilio credentials via configuration or
-  environment variables.
+- Each tenant supplies unique CRM, Twilio, and optional AI credentials via configuration.
 
 ## Environment Variables
 
@@ -39,15 +38,11 @@ Copy `.env.example` to `.env` and adjust the values as needed:
 | `PORT` | Server port (default 3000). |
 | `MONGO_URI` / `MONGO_URL` | MongoDB connection string. |
 | `JWT_SECRET` | Secret used to sign JWTs. |
-| `OPENAI_API_KEY` | Key for AI assistant replies. |
 | `DEFAULT_TENANT` | Default tenant id when none supplied. |
 | `CLIENT_URL` | Allowed origin for CORS. |
 | `REDIS_URL` | Redis connection string. |
 | `CRM_BASE_URL` | Base URL of external CRM. |
 | `CRM_API_KEY` | API key for the CRM. |
-| `TWILIO_ACCOUNT_SID` | Twilio account identifier. |
-| `TWILIO_API_KEY` / `TWILIO_API_SECRET` | API key pair used to mint access tokens. |
-| `TWILIO_AUTH_TOKEN` | Twilio auth token for validating webhooks. |
 
 ## Required Twilio Resources
 
