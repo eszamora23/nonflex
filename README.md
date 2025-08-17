@@ -36,13 +36,16 @@ Copy `.env.example` to `.env` and adjust the values as needed:
 | Variable | Description |
 | --- | --- |
 | `PORT` | Server port (default 3000). |
-| `MONGO_URI` / `MONGO_URL` | MongoDB connection string. |
+| `MONGO_URL` | MongoDB connection string. |
 | `JWT_SECRET` | Secret used to sign JWTs. |
 | `DEFAULT_TENANT` | Default tenant id when none supplied. |
 | `CLIENT_URL` | Allowed origin for CORS. |
+| `PUBLIC_URL` | Base public URL of the service. |
 | `REDIS_URL` | Redis connection string. |
 | `CRM_BASE_URL` | Base URL of external CRM. |
 | `CRM_API_KEY` | API key for the CRM. |
+| `TWILIO_API_KEY_SID` | Twilio API Key SID for access tokens. |
+| `TWILIO_API_KEY_SECRET` | Twilio API Key Secret for access tokens. |
 
 ## Required Twilio Resources
 
