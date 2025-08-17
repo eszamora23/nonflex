@@ -5,6 +5,7 @@ const AgentSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   skills: [String],
   languages: [String],
+  status: { type: String, default: 'offline' },
   roles: [String],
   tenant: { type: String, required: true },
 }, { timestamps: true });
