@@ -9,14 +9,6 @@ const AddressSchema = new mongoose.Schema({
   country: String,
 }, { _id: false });
 
-const OrderSchema = new mongoose.Schema({
-  productId: String,
-  quantity: Number,
-  price: Number,
-  status: String,
-  createdAt: { type: Date, default: Date.now },
-}, { _id: false });
-
 const CustomerSchema = new mongoose.Schema({
   tenant: { type: String, required: true },
   profile: {
@@ -26,7 +18,6 @@ const CustomerSchema = new mongoose.Schema({
     phone: String,
   },
   addresses: [AddressSchema],
-  orders: [OrderSchema],
 }, { timestamps: true });
 
 export default mongoose.model('Customer', CustomerSchema);

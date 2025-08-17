@@ -5,11 +5,15 @@ async function loadModels() {
   try {
     const { default: Agent } = await import('../server/models/Agent.js');
     const { default: Customer } = await import('../server/models/Customer.js');
-    return { Agent, Customer };
+    const { default: Order } = await import('../server/models/Order.js');
+    const { default: Ticket } = await import('../server/models/Ticket.js');
+    return { Agent, Customer, Order, Ticket };
   } catch (err) {
     const Agent = require('../server/models/Agent');
     const Customer = require('../server/models/Customer');
-    return { Agent, Customer };
+    const Order = require('../server/models/Order');
+    const Ticket = require('../server/models/Ticket');
+    return { Agent, Customer, Order, Ticket };
   }
 }
 
@@ -17,12 +21,14 @@ const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://l
 const TENANT = process.env.DEFAULT_TENANT || 'tenant1';
 
 async function seed() {
-  const { Agent, Customer } = await loadModels();
+  const { Agent, Customer, Order, Ticket } = await loadModels();
   await mongoose.connect(MONGO_URI);
 
   try {
     await Agent.deleteMany({ tenant: TENANT });
     await Customer.deleteMany({ tenant: TENANT });
+    await Order.deleteMany({ tenant: TENANT });
+    await Ticket.deleteMany({ tenant: TENANT });
 
     const agents = [
       {
@@ -46,7 +52,7 @@ async function seed() {
       });
     }
 
-    const customers = [
+    const customersData = [
       {
         tenant: TENANT,
         profile: {
@@ -63,10 +69,6 @@ async function seed() {
             postalCode: '62704',
             country: 'US',
           },
-        ],
-        orders: [
-          { productId: 'SKU123', quantity: 1, price: 49.99, status: 'shipped' },
-          { productId: 'SKU124', quantity: 2, price: 29.99, status: 'processing' },
         ],
       },
       {
@@ -86,13 +88,25 @@ async function seed() {
             country: 'US',
           },
         ],
-        orders: [
-          { productId: 'SKU200', quantity: 1, price: 99.99, status: 'delivered' },
-        ],
       },
     ];
 
-    await Customer.insertMany(customers);
+    const customers = await Customer.insertMany(customersData);
+
+    const orders = [
+      { tenant: TENANT, customer: customers[0]._id, productId: 'SKU123', quantity: 1, price: 49.99, status: 'shipped' },
+      { tenant: TENANT, customer: customers[0]._id, productId: 'SKU124', quantity: 2, price: 29.99, status: 'processing' },
+      { tenant: TENANT, customer: customers[1]._id, productId: 'SKU200', quantity: 1, price: 99.99, status: 'delivered' },
+    ];
+
+    await Order.insertMany(orders);
+
+    const tickets = [
+      { tenant: TENANT, customer: customers[0]._id, subject: 'Where is my order?', description: 'Order has not arrived.', status: 'open' },
+      { tenant: TENANT, customer: customers[1]._id, subject: 'Return request', description: 'I want to return my item.', status: 'open' },
+    ];
+
+    await Ticket.insertMany(tickets);
   } finally {
     await mongoose.disconnect();
   }
