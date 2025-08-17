@@ -13,7 +13,7 @@ const agents = require('./routes/agents');
 const customers = require('./routes/customers');
 const tasks = require('./routes/tasks');
 const ai = require('./routes/ai');
-const tokens = require('./routes/tokens');
+const tokenRoutes = require('./routes/tokens');
 const twilioWebhooks = require('./routes/twilio.webhooks');
 
 const app = express();
@@ -32,7 +32,7 @@ app.use('/agents', agents);
 app.use('/customers', customers);
 app.use('/tasks', tasks);
 app.use('/ai', ai);
-app.use('/tokens', tokens);
+app.use('/tokens', tokenRoutes);
 app.use('/webhooks/twilio', verifyTwilioSignature, twilioWebhooks);
 
 // centralized error handler
