@@ -25,15 +25,25 @@ router.post('/conversations', async (req, res, next) => {
       return res.sendStatus(200);
     }
 
-    // Generar respuesta IA
-    const reply = await generateReply({
+    const { conversations } = makeTwilioClients(req.tenant);
+    const convo = await conversations.v1.conversations(ConversationSid).fetch();
+    const attrs = convo.attributes ? JSON.parse(convo.attributes) : {};
+    const aiEnabled = attrs.aiEnabled !== false;
+
+    const { reply, handoff } = await generateReply({
       tenant: req.tenant,
       userMsg: Body,
       fromPhone: From,
+      conversationId: ConversationSid,
+      aiEnabled,
     });
 
-    if (reply) {
-      const { conversations } = makeTwilioClients(req.tenant);
+    if (handoff) {
+      attrs.aiEnabled = false;
+      await conversations.v1
+        .conversations(ConversationSid)
+        .update({ attributes: JSON.stringify(attrs) });
+    } else if (reply) {
       await conversations.v1
         .conversations(ConversationSid)
         .messages.create({ author: 'bot', body: reply });
