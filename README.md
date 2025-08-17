@@ -44,8 +44,12 @@ Copy `.env.example` to `.env` and adjust the values as needed:
 | `REDIS_URL` | Redis connection string. |
 | `CRM_BASE_URL` | Base URL of external CRM. |
 | `CRM_API_KEY` | API key for the CRM. |
-| `TWILIO_API_KEY_SID` | Twilio API Key SID for access tokens. |
-| `TWILIO_API_KEY_SECRET` | Twilio API Key Secret for access tokens. |
+| `TWILIO_ACCOUNT_SID` | Twilio Account SID. |
+| `TWILIO_AUTH_TOKEN` | Twilio Auth Token. |
+| `TWILIO_API_KEY` | Twilio API Key SID for access tokens. |
+| `TWILIO_API_SECRET` | Twilio API Key Secret for access tokens. |
+| `TWILIO_CONVERSATIONS_SERVICE_SID` | Twilio Conversations Service SID. |
+| `OPENAI_API_KEY` | OpenAI API key for AI features. |
 
 ## Required Twilio Resources
 
