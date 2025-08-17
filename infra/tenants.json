@@ -1,0 +1,12 @@
+{
+  "tenant1": {
+    "id": "tenant1",
+    "name": "Tenant One",
+    "apiKey": "abc123"
+  },
+  "tenant2": {
+    "id": "tenant2",
+    "name": "Tenant Two",
+    "apiKey": "def456"
+  }
+}
