@@ -2,6 +2,7 @@ import express from 'express';
 import * as state from '../services/state.js';
 import { makeTwilioClients } from '../services/twilio.js';
 import { auth } from '../lib/auth.js';
+import audit from '../services/audit.js';
 
 const router = express.Router();
 
@@ -26,6 +27,13 @@ router.post('/create', async (req, res, next) => {
     const task = await taskrouter.tasks.create({
       workflowSid: tcfg.workflowSid,
       attributes: JSON.stringify(attrs)
+    });
+
+    audit.log('task.create', {
+      tenant: req.tenant?.id || null,
+      user: req.user?.id || null,
+      taskSid: task.sid,
+      attributes: attrs
     });
 
     return res.status(201).json({ taskSid: task.sid, attributes: attrs });
@@ -95,6 +103,12 @@ router.post('/claim', async (req, res, next) => {
       updatedBy: 'tasks.claim',
     });
 
+    audit.log('task.claim', {
+      tenant: req.tenant?.id || null,
+      user: req.user?.id || null,
+      conversationId
+    });
+
     res.json({ token, voiceFrom, waFrom });
   } catch (err) {
     next(err);
@@ -129,6 +143,12 @@ router.post('/release', async (req, res, next) => {
       locked: false,
       lockedBy: null,
       updatedBy: 'tasks.release',
+    });
+
+    audit.log('task.release', {
+      tenant: req.tenant?.id || null,
+      user: req.user?.id || null,
+      conversationId
     });
 
     res.json({ released: true });

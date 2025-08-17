@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import Agent from '../models/Agent.js';
 import { sign } from '../lib/auth.js';
+import audit from '../services/audit.js';
 
 const router = express.Router();
 
@@ -28,6 +29,14 @@ router.post('/login', async (req, res, next) => {
       roles: agent.roles,
       tenant: agent.tenant,
     });
+
+    audit.log('agent.login', {
+      agentId: agent._id.toString(),
+      username: agent.username,
+      tenant: agent.tenant,
+      ip: req.ip
+    });
+
     res.json({ token });
   } catch (err) {
     next(err);
