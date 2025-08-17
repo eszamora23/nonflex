@@ -6,17 +6,26 @@ const state = require('../services/state');
 
 const router = express.Router();
 
-// Handle incoming messages from Twilio Conversations
+/**
+ * Webhook de Conversations (WhatsApp/SMS/Webchat)
+ * Procesa sólo onMessageAdded, ignora mensajes del bot y responde con IA si procede.
+ */
 router.post('/conversations', async (req, res, next) => {
-  const { ConversationSid, Body, Author, From } = req.body;
+  const { ConversationSid, Body, Author, From, EventType } = req.body;
 
   try {
-    // avoid responding to our own messages
+    // Procesar sólo mensajes entrantes reales
+    if (EventType && EventType !== 'onMessageAdded') {
+      await state.upsert(ConversationSid, { lastEvent: EventType });
+      return res.sendStatus(200);
+    }
+
+    // Evitar loops (nuestros propios mensajes)
     if (!Body || Author === 'bot') {
       return res.sendStatus(200);
     }
 
-    // generate AI reply and send back via Twilio Conversations
+    // Generar respuesta IA
     const reply = await generateReply({
       tenant: req.tenant,
       userMsg: Body,
@@ -30,8 +39,13 @@ router.post('/conversations', async (req, res, next) => {
         .messages.create({ author: 'bot', body: reply });
     }
 
-    // store latest state
-    await state.upsert(ConversationSid, { lastInbound: Body });
+    // Guardar último estado básico
+    await state.upsert(ConversationSid, {
+      lastInbound: Body,
+      lastAuthor: Author,
+      lastEvent: 'onMessageAdded',
+      updatedBy: 'webhook.conversations',
+    });
 
     res.sendStatus(200);
   } catch (err) {
@@ -39,7 +53,9 @@ router.post('/conversations', async (req, res, next) => {
   }
 });
 
-// Simple voice webhook returning basic TwiML
+/**
+ * Webhook de Voice (Studio/IVR → TwiML simple)
+ */
 router.post('/voice', (req, res) => {
   const response = new twilio.twiml.VoiceResponse();
   response.say('Thank you for calling. Please hold while we connect you.');

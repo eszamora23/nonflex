@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -23,7 +25,8 @@ app.use(helmet());
 app.use(morgan('combined'));
 app.use(cors);
 app.use(rateLimit);
-app.use(bodyParser.urlencoded({ extended: false }));
+app.set('trust proxy', true); // necesario si usas ngrok/proxy
+app.use(bodyParser.urlencoded({ extended: false })); // Twilio envía x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(tenantResolver);
 
@@ -33,11 +36,13 @@ app.use('/customers', customers);
 app.use('/tasks', tasks);
 app.use('/ai', ai);
 app.use('/tokens', tokenRoutes);
+// Firma Twilio se verifica aquí antes de entrar al router
 app.use('/webhooks/twilio', verifyTwilioSignature, twilioWebhooks);
 
 // centralized error handler
 app.use((err, req, res, next) => {
-  console.error(err); // eslint-disable-line no-console
+  // eslint-disable-next-line no-console
+  console.error(err);
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
@@ -46,7 +51,7 @@ module.exports = app;
 // Connect to Mongo and start server if run directly
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
-  const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost/nonflex';
+  const MONGO_URL = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://localhost/nonflex';
   mongoose
     .connect(MONGO_URL)
     .then(() => {

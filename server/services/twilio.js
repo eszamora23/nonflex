@@ -19,9 +19,11 @@ function makeTwilioClients(tenant = {}) {
   }
 
   const client = twilio(accountSid, authToken);
-  const taskrouter = workspaceSid
-    ? client.taskrouter.workspaces(workspaceSid)
-    : null;
+
+  // SDK v5: TaskRouter v1
+  const taskrouter = workspaceSid ? client.taskrouter.v1.workspaces(workspaceSid) : null;
+
+  // Conversations/Video helpers (usaremos .v1 en rutas)
   const conversations = client.conversations;
   const video = client.video;
 
