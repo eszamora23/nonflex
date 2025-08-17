@@ -1,0 +1,36 @@
+{
+  "workspace": {
+    "friendlyName": "Nonflex Workspace"
+  },
+  "activities": [
+    { "friendlyName": "Available", "available": true },
+    { "friendlyName": "Offline", "available": false },
+    { "friendlyName": "On a Task", "available": false }
+  ],
+  "taskQueues": [
+    { "friendlyName": "Sales", "targetWorkers": "skills HAS \"sales\"" },
+    { "friendlyName": "Support", "targetWorkers": "skills HAS \"support\"" }
+  ],
+  "workflow": {
+    "friendlyName": "Default Workflow",
+    "configuration": {
+      "task_routing": {
+        "filters": [
+          {
+            "filter_friendly_name": "Sales",
+            "expression": "type=='sales'",
+            "targets": [ { "queue": "Sales" } ]
+          },
+          {
+            "filter_friendly_name": "Support",
+            "expression": "type=='support'",
+            "targets": [ { "queue": "Support" } ]
+          }
+        ],
+        "default_filter": {
+          "queue": "Support"
+        }
+      }
+    }
+  }
+}

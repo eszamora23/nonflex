@@ -1,0 +1,63 @@
+{
+  "comment": "Sample IVR menu and task creation",
+  "friendly_name": "Nonflex IVR Flow",
+  "description": "Routes callers based on key press and creates TaskRouter tasks",
+  "states": [
+    {
+      "name": "greeting",
+      "type": "say-play",
+      "properties": {
+        "say": "Welcome to Nonflex. For sales, press 1. For support, press 2."
+      },
+      "transitions": [
+        { "next": "menu", "event": "audioComplete" }
+      ]
+    },
+    {
+      "name": "menu",
+      "type": "gather-input-on-call",
+      "properties": {
+        "say": "Press 1 for sales or 2 for support.",
+        "num_digits": 1
+      },
+      "transitions": [
+        { "next": "create-sales-task", "event": "keypress", "conditions": ["{{widgets.menu.Digit}} == 1"] },
+        { "next": "create-support-task", "event": "keypress", "conditions": ["{{widgets.menu.Digit}} == 2"] },
+        { "next": "goodbye", "event": "timeout" }
+      ]
+    },
+    {
+      "name": "create-sales-task",
+      "type": "create-task",
+      "properties": {
+        "workflow_sid": "{{flow.data.workflow_sid}}",
+        "attributes": "{\"type\":\"sales\"}"
+      },
+      "transitions": [
+        { "next": "goodbye", "event": "taskCreated" }
+      ]
+    },
+    {
+      "name": "create-support-task",
+      "type": "create-task",
+      "properties": {
+        "workflow_sid": "{{flow.data.workflow_sid}}",
+        "attributes": "{\"type\":\"support\"}"
+      },
+      "transitions": [
+        { "next": "goodbye", "event": "taskCreated" }
+      ]
+    },
+    {
+      "name": "goodbye",
+      "type": "say-play",
+      "properties": {
+        "say": "Thank you for calling Nonflex. Goodbye."
+      },
+      "transitions": [
+        { "event": "audioComplete", "next": null }
+      ]
+    }
+  ],
+  "initial_state": "greeting"
+}

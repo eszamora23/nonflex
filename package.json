@@ -1,0 +1,29 @@
+{
+  "name": "nonflex",
+  "version": "1.0.0",
+  "description": "This repository begins with a lightweight directory structure for the project:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node infra/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.1",
+    "morgan": "^1.10.1",
+    "node-fetch": "^3.3.2",
+    "openai": "^5.12.2",
+    "redis": "^5.8.1",
+    "twilio": "^5.8.0"
+  }
+}
