@@ -18,6 +18,7 @@ const OrderSchema = new mongoose.Schema({
 }, { _id: false });
 
 const CustomerSchema = new mongoose.Schema({
+  tenant: { type: String, required: true },
   profile: {
     firstName: String,
     lastName: String,
