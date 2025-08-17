@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const Agent = require('../models/Agent');
 const { sign } = require('../lib/auth');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post('/login', async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const token = sign({ id: agent._id, username: agent.username, roles: agent.roles });
+    await audit.log('agent.login', { username });
     res.json({ token });
   } catch (err) {
     next(err);

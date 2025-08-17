@@ -1,9 +1,10 @@
 const express = require('express');
 const twilio = require('twilio');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const { identity, room, serviceSid } = req.body;
   try {
     const { accountSid, apiKey, apiSecret, conversationsServiceSid } = req.tenant?.twilio || {};
@@ -26,6 +27,7 @@ router.post('/', (req, res, next) => {
       token.addGrant(new VideoGrant({ room }));
     }
 
+    await audit.log('token.generate', { identity, room, serviceSid: chatSid });
     res.json({ token: token.toJwt() });
   } catch (err) {
     next(err);

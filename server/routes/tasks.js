@@ -1,6 +1,7 @@
 const express = require('express');
 const state = require('../services/state');
 const { makeTwilioClients } = require('../services/twilio');
+const audit = require('../services/audit');
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.post('/claim', async (req, res, next) => {
     }
     const { voiceFrom, waFrom } = makeTwilioClients(req.tenant);
     await state.upsert(conversationId, { locked: true });
+    await audit.log('task.claim', { conversationId });
     res.json({ token, voiceFrom, waFrom });
   } catch (err) {
     next(err);
@@ -32,6 +34,7 @@ router.post('/release', async (req, res, next) => {
   try {
     await state.release(conversationId, token);
     await state.upsert(conversationId, { locked: false });
+    await audit.log('task.release', { conversationId });
     res.json({ released: true });
   } catch (err) {
     next(err);

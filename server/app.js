@@ -1,12 +1,12 @@
 const express = require('express');
 const helmet = require('helmet');
-const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('./lib/cors');
 const rateLimit = require('./lib/rateLimit');
 const tenantResolver = require('./lib/tenantResolver');
 const { verifyTwilioSignature } = require('./services/security');
 const mongoose = require('mongoose');
+const { httpLogger, logger } = require('./lib/logger');
 
 // route modules
 const agents = require('./routes/agents');
@@ -20,7 +20,7 @@ const app = express();
 
 // global middlewares
 app.use(helmet());
-app.use(morgan('combined'));
+app.use(httpLogger);
 app.use(cors);
 app.use(rateLimit);
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -37,7 +37,7 @@ app.use('/webhooks/twilio', verifyTwilioSignature, twilioWebhooks);
 
 // centralized error handler
 app.use((err, req, res, next) => {
-  console.error(err); // eslint-disable-line no-console
+  logger.error(err);
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
@@ -51,13 +51,11 @@ if (require.main === module) {
     .connect(MONGO_URL)
     .then(() => {
       app.listen(PORT, () => {
-        // eslint-disable-next-line no-console
-        console.log(`Server listening on port ${PORT}`);
+        logger.info(`Server listening on port ${PORT}`);
       });
     })
     .catch((err) => {
-      // eslint-disable-next-line no-console
-      console.error('Mongo connection error', err);
+      logger.error('Mongo connection error', err);
       process.exit(1);
     });
 }
