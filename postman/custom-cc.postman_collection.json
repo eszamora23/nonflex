@@ -1,0 +1,132 @@
+{
+  "info": {
+    "name": "Custom Contact Center API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"agent1\",\n  \"password\": \"secret\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/agents/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["agents", "login"]
+        }
+      }
+    },
+    {
+      "name": "Task Claim",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"conversationId\": \"CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tasks/claim",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "claim"]
+        }
+      }
+    },
+    {
+      "name": "AI Reply",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userMsg\": \"Hello\",\n  \"fromPhone\": \"+15551234567\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/reply",
+          "host": ["{{baseUrl}}"],
+          "path": ["ai", "reply"]
+        }
+      }
+    },
+    {
+      "name": "CRM Lookup",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/customers/phone/15551234567",
+          "host": ["{{baseUrl}}"],
+          "path": ["customers", "phone", "15551234567"]
+        }
+      }
+    },
+    {
+      "name": "Token Issuance",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identity\": \"agent1\",\n  \"room\": \"support\",\n  \"serviceSid\": \"ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tokens",
+          "host": ["{{baseUrl}}"],
+          "path": ["tokens"]
+        }
+      }
+    },
+    {
+      "name": "Twilio Conversations Webhook",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "ConversationSid", "value": "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+            { "key": "Body", "value": "Hello" },
+            { "key": "Author", "value": "+15551234567" },
+            { "key": "From", "value": "+15551234567" }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/twilio/conversations",
+          "host": ["{{baseUrl}}"],
+          "path": ["webhooks", "twilio", "conversations"]
+        }
+      }
+    },
+    {
+      "name": "Twilio Voice Webhook",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/twilio/voice",
+          "host": ["{{baseUrl}}"],
+          "path": ["webhooks", "twilio", "voice"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ]
+}
