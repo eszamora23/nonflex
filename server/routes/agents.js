@@ -34,4 +34,36 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
+// Update agent status
+router.patch('/:id/status', async (req, res, next) => {
+  const { status } = req.body;
+  if (!status || !['available', 'busy', 'offline'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  try {
+    const query = req.tenantId ? { _id: req.params.id, tenant: req.tenantId } : { _id: req.params.id };
+    const agent = await Agent.findOneAndUpdate(query, { status }, { new: true, fields: 'status level' });
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+    res.json({ status: agent.status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Retrieve agent level
+router.get('/:id/level', async (req, res, next) => {
+  try {
+    const query = req.tenantId ? { _id: req.params.id, tenant: req.tenantId } : { _id: req.params.id };
+    const agent = await Agent.findOne(query, 'level');
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+    res.json({ level: agent.level });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
