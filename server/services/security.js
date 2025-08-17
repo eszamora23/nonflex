@@ -1,4 +1,4 @@
-const twilio = require('twilio');
+import twilio from 'twilio';
 
 /**
  * Verifica la firma X-Twilio-Signature de los webhooks entrantes.
@@ -26,4 +26,4 @@ function verifyTwilioSignature(req, res, next) {
   return next();
 }
 
-module.exports = { verifyTwilioSignature };
+export { verifyTwilioSignature };

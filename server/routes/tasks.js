@@ -1,7 +1,7 @@
-const express = require('express');
-const state = require('../services/state');
-const { makeTwilioClients } = require('../services/twilio');
-const { auth } = require('../lib/auth');
+import express from 'express';
+import * as state from '../services/state.js';
+import { makeTwilioClients } from '../services/twilio.js';
+import { auth } from '../lib/auth.js';
 
 const router = express.Router();
 
@@ -88,4 +88,4 @@ router.post('/release', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

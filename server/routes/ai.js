@@ -1,6 +1,6 @@
-const express = require('express');
-const { auth } = require('../lib/auth');
-const aiProvider = require('../services/aiProvider');
+import express from 'express';
+import { auth } from '../lib/auth.js';
+import * as aiProvider from '../services/aiProvider.js';
 
 const router = express.Router();
 
@@ -22,4 +22,4 @@ router.post('/reply', auth, async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

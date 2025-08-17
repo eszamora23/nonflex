@@ -1,8 +1,7 @@
-const cors = require('cors');
+import cors from 'cors';
 
 const whitelist = [
-  'http://localhost:3000',
-  'http://localhost:3001',
+  'http://localhost:5173',
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -17,5 +16,6 @@ const corsOptions = {
   credentials: true,
 };
 
-module.exports = cors(corsOptions);
-module.exports.corsOptions = corsOptions;
+const middleware = cors(corsOptions);
+export default middleware;
+export { corsOptions };

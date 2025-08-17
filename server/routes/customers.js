@@ -1,5 +1,5 @@
-const express = require('express');
-const CRM = require('../services/crm');
+import express from 'express';
+import * as CRM from '../services/crm.js';
 
 const router = express.Router();
 
@@ -23,4 +23,4 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

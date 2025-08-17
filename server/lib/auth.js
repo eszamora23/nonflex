@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 // helper to sign JWTs with a shared secret
 const secret = process.env.JWT_SECRET || 'changeme';
@@ -33,4 +33,4 @@ function auth(req, res, next) {
   next();
 }
 
-module.exports = { sign, verify, auth };
+export { sign, verify, auth };

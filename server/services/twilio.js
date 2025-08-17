@@ -1,4 +1,4 @@
-const twilio = require('twilio');
+import twilio from 'twilio';
 
 /**
  * Create Twilio REST clients for a tenant.
@@ -33,4 +33,4 @@ function makeTwilioClients(tenant = {}) {
   return { client, taskrouter, conversations, video, voiceFrom, waFrom };
 }
 
-module.exports = { makeTwilioClients };
+export { makeTwilioClients };
