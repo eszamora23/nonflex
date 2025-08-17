@@ -1,6 +1,6 @@
-const tenants = require('../../infra/tenants.json');
+import tenants from '../../infra/tenants.json' assert { type: 'json' };
 
-module.exports = function tenantResolver(req, res, next) {
+export default function tenantResolver(req, res, next) {
   const tenantId = req.header('X-Tenant-Id') || process.env.DEFAULT_TENANT || null;
   req.tenantId = tenantId || null;
   const tenant = tenantId && tenants[tenantId] ? tenants[tenantId] : null;

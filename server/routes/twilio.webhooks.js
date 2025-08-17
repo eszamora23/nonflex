@@ -1,8 +1,8 @@
-const express = require('express');
-const twilio = require('twilio');
-const { generateReply } = require('../services/aiProvider');
-const { makeTwilioClients } = require('../services/twilio');
-const state = require('../services/state');
+import express from 'express';
+import twilio from 'twilio';
+import { generateReply } from '../services/aiProvider.js';
+import { makeTwilioClients } from '../services/twilio.js';
+import * as state from '../services/state.js';
 
 const router = express.Router();
 
@@ -63,4 +63,4 @@ router.post('/voice', (req, res) => {
   res.send(response.toString());
 });
 
-module.exports = router;
+export default router;

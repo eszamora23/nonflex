@@ -1,16 +1,19 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 let redisClient;
 let redisAvailable = false;
 
 try {
-  const redis = require('redis');
-  redisClient = redis.createClient({ url: process.env.REDIS_URL });
-  redisClient.connect().then(() => {
-    redisAvailable = true;
-  }).catch(() => {
-    redisAvailable = false;
-  });
+  const { createClient } = await import('redis');
+  redisClient = createClient({ url: process.env.REDIS_URL });
+  redisClient
+    .connect()
+    .then(() => {
+      redisAvailable = true;
+    })
+    .catch(() => {
+      redisAvailable = false;
+    });
 } catch (err) {
   redisClient = null;
 }
@@ -53,4 +56,4 @@ async function unlock(key, token) {
   }
 }
 
-module.exports = { lock, unlock };
+export { lock, unlock };

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ConversationStateSchema = new mongoose.Schema({
   conversationId: { type: String, required: true, unique: true },
@@ -6,4 +6,4 @@ const ConversationStateSchema = new mongoose.Schema({
   locked: { type: Boolean, default: false },
 }, { timestamps: true });
 
-module.exports = mongoose.model('ConversationState', ConversationStateSchema);
+export default mongoose.model('ConversationState', ConversationStateSchema);

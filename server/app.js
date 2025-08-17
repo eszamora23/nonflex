@@ -1,22 +1,24 @@
-require('dotenv').config();
-
-const express = require('express');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const cors = require('./lib/cors');
-const rateLimit = require('./lib/rateLimit');
-const tenantResolver = require('./lib/tenantResolver');
-const { verifyTwilioSignature } = require('./services/security');
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import cors from './lib/cors.js';
+import rateLimit from './lib/rateLimit.js';
+import tenantResolver from './lib/tenantResolver.js';
+import { verifyTwilioSignature } from './services/security.js';
+import mongoose from 'mongoose';
+import { fileURLToPath } from 'url';
 
 // route modules
-const agents = require('./routes/agents');
-const customers = require('./routes/customers');
-const tasks = require('./routes/tasks');
-const ai = require('./routes/ai');
-const tokenRoutes = require('./routes/tokens');
-const twilioWebhooks = require('./routes/twilio.webhooks');
+import agents from './routes/agents.js';
+import customers from './routes/customers.js';
+import tasks from './routes/tasks.js';
+import ai from './routes/ai.js';
+import tokenRoutes from './routes/tokens.js';
+import twilioWebhooks from './routes/twilio.webhooks.js';
+
+dotenv.config();
 
 const app = express();
 
@@ -46,10 +48,10 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-module.exports = app;
+export default app;
 
 // Connect to Mongo and start server if run directly
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const PORT = process.env.PORT || 3000;
   const MONGO_URL = process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://localhost/nonflex';
   mongoose

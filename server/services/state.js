@@ -1,4 +1,4 @@
-const queue = require('./queue');
+import * as queue from './queue.js';
 
 const states = new Map();
 
@@ -17,4 +17,4 @@ async function release(conversationId, token) {
   return queue.unlock(`state:${conversationId}`, token);
 }
 
-module.exports = { upsert, lock, release };
+export { upsert, lock, release };

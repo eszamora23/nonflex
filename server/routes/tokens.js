@@ -1,5 +1,5 @@
-const express = require('express');
-const twilio = require('twilio');
+import express from 'express';
+import twilio from 'twilio';
 
 const router = express.Router();
 
@@ -69,5 +69,5 @@ router.post('/video', (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;
 

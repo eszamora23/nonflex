@@ -1,7 +1,7 @@
-let fetchFn = global.fetch;
+let fetchFn = globalThis.fetch;
 if (!fetchFn) {
   try {
-    fetchFn = require('node-fetch');
+    fetchFn = (await import('node-fetch')).default;
   } catch (err) {
     throw new Error('Fetch API not available');
   }
@@ -34,4 +34,4 @@ async function getOrderById(tenant, orderId) {
   return request(tenant, `/orders/${encodeURIComponent(orderId)}`);
 }
 
-module.exports = { getByPhone, getByExternalId, getOrderById };
+export { getByPhone, getByExternalId, getOrderById };

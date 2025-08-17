@@ -1,5 +1,5 @@
-const OpenAI = require('openai');
-const CRM = require('./crm');
+import OpenAI from 'openai';
+import * as CRM from './crm.js';
 
 function getClient(tenant = {}) {
   const apiKey = tenant.ai?.openaiApiKey;
@@ -73,4 +73,4 @@ async function generateReply({ tenant = {}, model = 'gpt-4o-mini', userMsg, from
   return choice && choice.message && choice.message.content ? choice.message.content.trim() : '';
 }
 
-module.exports = { generateReply };
+export { generateReply };

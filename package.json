@@ -1,37 +1,21 @@
 {
   "name": "nonflex",
-  "version": "1.0.0",
-  "description": "This repository begins with a lightweight directory structure for the project:",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node infra/seed.js",
-    "dev:server": "nodemon server/app.js",
-    "dev:client": "cd client && npm run dev",
+    "seed": "npm run seed --workspace server",
+    "dev": "concurrently -n server,client -c auto \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace server && npm run build --workspace client",
+    "start": "npm start --workspace server",
     "tunnel": "ngrok http 3000"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "type": "commonjs",
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.0.1",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.17.1",
-    "morgan": "^1.10.1",
-    "node-fetch": "^3.3.2",
-    "openai": "^5.12.2",
-    "redis": "^5.8.1",
-    "twilio": "^5.8.0"
-  },
   "devDependencies": {
-    "ngrok": "^5.0.0-beta.2",
-    "nodemon": "^3.1.10"
+    "concurrently": "^9.0.0",
+    "ngrok": "^5.0.0-beta.2"
   }
 }
