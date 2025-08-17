@@ -71,15 +71,18 @@ Copy `.env.example` to `.env` and adjust the values as needed:
    ```
 4. **Start backend**
    ```bash
-   node server/app.js
+   npm run dev:server
    ```
 5. **Start frontend**
    ```bash
-   cd client
-   npm run dev
+   npm run dev:client
    ```
    The React app will be available at <http://localhost:5173>.
-6. **Test flows**
+6. *(Optional)* **Expose webhooks**
+   ```bash
+   npm run tunnel
+   ```
+7. **Test flows**
    - **WhatsApp / chat** – Send a message to your configured WhatsApp number or
      create a conversation; the server replies through Twilio Conversations.
    - **Voice** – Call the provisioned phone number. The Studio flow gathers
