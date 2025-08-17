@@ -2,11 +2,36 @@
   "tenant1": {
     "id": "tenant1",
     "name": "Tenant One",
-    "apiKey": "abc123"
+    "apiKey": "abc123",
+    "twilio": {
+      "accountSid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "authToken": "auth_token_1",
+      "apiKey": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "apiSecret": "api_secret_1",
+      "conversationsServiceSid": "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "voiceNumber": "+15005550006",
+      "whatsappNumber": "whatsapp:+15005550006",
+      "workspaceSid": "WSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "workflowSid": "WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    },
+    "ai": {
+      "openaiApiKey": "sk-tenant1"
+    }
   },
   "tenant2": {
     "id": "tenant2",
     "name": "Tenant Two",
-    "apiKey": "def456"
+    "apiKey": "def456",
+    "twilio": {
+      "accountSid": "ACYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+      "authToken": "auth_token_2",
+      "apiKey": "SKYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+      "apiSecret": "api_secret_2",
+      "conversationsServiceSid": "ISYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+      "voiceNumber": "+15005550006",
+      "whatsappNumber": "whatsapp:+15005550006",
+      "workspaceSid": "WSYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+      "workflowSid": "WWYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+    }
   }
 }
