@@ -1,4 +1,5 @@
 import { lock as lockKey, unlock as unlockKey } from './queue.js';
+import audit from './audit.js';
 
 const states = new Map();
 
@@ -6,6 +7,7 @@ export async function upsert(conversationId, data = {}) {
   const existing = states.get(conversationId) || {};
   const newState = { ...existing, ...data, updatedAt: new Date().toISOString() };
   states.set(conversationId, newState);
+  audit.log('state.update', { conversationId, state: newState });
   return newState;
 }
 
