@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from './lib/cors.js';
 import rateLimit from './lib/rateLimit.js';
 import tenantResolver from './lib/tenantResolver.js';
+import logger, { requestLogger } from './lib/logger.js';
 import { verifyTwilioSignature } from './services/security.js';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
@@ -25,13 +25,13 @@ const app = express();
 
 // global middlewares
 app.use(helmet());
-app.use(morgan('combined'));
 app.use(cors);
 app.use(rateLimit);
 app.set('trust proxy', true); // necesario si usas ngrok/proxy
 app.use(bodyParser.urlencoded({ extended: false })); // Twilio envía x-www-form-urlencoded
 app.use(bodyParser.json());
 app.use(tenantResolver);
+app.use(requestLogger);
 
 // routes
 app.use('/agents', agents);
@@ -45,9 +45,14 @@ app.use('/webhooks/twilio', verifyTwilioSignature, twilioWebhooks);
 
 // centralized error handler
 app.use((err, req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+  if (req.log) {
+    req.log.error(err);
+  } else {
+    logger.error(err);
+  }
+  res.status(status).json({ error: message });
 });
 
 export default app;
@@ -60,13 +65,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     .connect(MONGO_URL)
     .then(() => {
       app.listen(PORT, () => {
-        // eslint-disable-next-line no-console
-        console.log(`Server listening on port ${PORT}`);
+        logger.info(`Server listening on port ${PORT}`);
       });
     })
     .catch((err) => {
-      // eslint-disable-next-line no-console
-      console.error('Mongo connection error', err);
+      logger.error({ err }, 'Mongo connection error');
       process.exit(1);
     });
 }
