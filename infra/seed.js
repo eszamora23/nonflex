@@ -55,12 +55,17 @@ async function seed() {
     const customersData = [
       {
         tenant: TENANT,
+        externalId: 'cust-ext-1',
         profile: {
           firstName: 'Michael',
           lastName: 'Johnson',
           email: 'michael.johnson@example.com',
           phone: '+15555551234',
         },
+        phones: ['+15555551234', '+15555550000'],
+        language: 'en',
+        tier: 'gold',
+        notes: 'Frequent shopper',
         addresses: [
           {
             line1: '742 Evergreen Terrace',
@@ -73,12 +78,17 @@ async function seed() {
       },
       {
         tenant: TENANT,
+        externalId: 'cust-ext-2',
         profile: {
           firstName: 'Emily',
           lastName: 'Davis',
           email: 'emily.davis@example.com',
           phone: '+15555554321',
         },
+        phones: ['+15555554321'],
+        language: 'es',
+        tier: 'silver',
+        notes: 'Interested in promotions',
         addresses: [
           {
             line1: '1600 Amphitheatre Parkway',

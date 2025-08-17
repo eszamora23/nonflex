@@ -11,12 +11,17 @@ const AddressSchema = new mongoose.Schema({
 
 const CustomerSchema = new mongoose.Schema({
   tenant: { type: String, required: true },
+  externalId: { type: String, index: true },
   profile: {
     firstName: String,
     lastName: String,
     email: { type: String, required: true },
     phone: String,
   },
+  phones: [String],
+  language: String,
+  tier: String,
+  notes: String,
   addresses: [AddressSchema],
 }, { timestamps: true });
 
