@@ -7,6 +7,8 @@ const AgentSchema = new mongoose.Schema({
   languages: [String],
   roles: [String],
   tenant: { type: String, required: true },
+  level: { type: Number, default: 1 },
+  status: { type: String, enum: ['available', 'busy', 'offline'], default: 'offline' },
 }, { timestamps: true });
 
 export default mongoose.model('Agent', AgentSchema);

@@ -31,6 +31,8 @@ async function seed() {
         skills: ['support', 'sales'],
         languages: ['en', 'es'],
         roles: ['agent'],
+        level: 1,
+        status: 'offline',
       },
     ];
 
@@ -43,6 +45,8 @@ async function seed() {
         languages: a.languages,
         roles: a.roles,
         tenant: TENANT,
+        level: a.level,
+        status: a.status,
       });
     }
 
