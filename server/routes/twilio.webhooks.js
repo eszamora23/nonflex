@@ -30,8 +30,8 @@ router.post('/conversations', async (req, res, next) => {
         .messages.create({ author: 'bot', body: reply });
     }
 
-    // store latest state
-    await state.upsert(ConversationSid, { lastInbound: Body });
+      // store latest state scoped to tenant
+      await state.upsert(req.tenantId, ConversationSid, { lastInbound: Body });
 
     res.sendStatus(200);
   } catch (err) {

@@ -1,20 +1,63 @@
-const queue = require('./queue');
+const crypto = require('crypto');
+const ConversationState = require('../models/ConversationState');
 
-const states = new Map();
-
-async function upsert(conversationId, data = {}) {
-  const existing = states.get(conversationId) || {};
-  const newState = { ...existing, ...data, updatedAt: new Date().toISOString() };
-  states.set(conversationId, newState);
-  return newState;
+function buildUpdate(tenant, conversationId, data = {}) {
+  const set = {};
+  const attributes = {};
+  if (Object.prototype.hasOwnProperty.call(data, 'aiEnabled')) {
+    set.aiEnabled = data.aiEnabled;
+    delete data.aiEnabled;
+  }
+  Object.entries(data).forEach(([key, value]) => {
+    attributes[`attributes.${key}`] = value;
+  });
+  return {
+    $set: { ...set, ...attributes },
+    $setOnInsert: { tenant, conversationId },
+  };
 }
 
-async function lock(conversationId, ttl = 30000) {
-  return queue.lock(`state:${conversationId}`, ttl);
+async function upsert(tenant, conversationId, data = {}) {
+  const update = buildUpdate(tenant, conversationId, { ...data });
+  return ConversationState.findOneAndUpdate(
+    { tenant, conversationId },
+    update,
+    { new: true, upsert: true, setDefaultsOnInsert: true },
+  );
 }
 
-async function release(conversationId, token) {
-  return queue.unlock(`state:${conversationId}`, token);
+async function lock(tenant, conversationId) {
+  const token = crypto.randomUUID();
+  const result = await ConversationState.findOneAndUpdate(
+    { tenant, conversationId, lockedBy: { $in: [null, undefined] } },
+    { $set: { lockedBy: token }, $setOnInsert: { tenant, conversationId } },
+    { new: true, upsert: true },
+  );
+
+  if (!result) {
+    const err = new Error('Task already claimed');
+    err.status = 409;
+    throw err;
+  }
+
+  return token;
+}
+
+async function release(tenant, conversationId, token) {
+  const result = await ConversationState.findOneAndUpdate(
+    { tenant, conversationId, lockedBy: token },
+    { $set: { lockedBy: null } },
+    { new: true },
+  );
+
+  if (!result) {
+    const err = new Error('Invalid lock token');
+    err.status = 409;
+    throw err;
+  }
+
+  return true;
 }
 
 module.exports = { upsert, lock, release };
+

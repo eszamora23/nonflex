@@ -11,14 +11,13 @@ router.post('/claim', async (req, res, next) => {
     return res.status(400).json({ error: 'conversationId required' });
   }
   try {
-    const token = await state.lock(conversationId);
-    if (!token) {
-      return res.status(409).json({ error: 'Task already claimed' });
-    }
+    const token = await state.lock(req.tenantId, conversationId);
     const { voiceFrom, waFrom } = makeTwilioClients(req.tenant);
-    await state.upsert(conversationId, { locked: true });
     res.json({ token, voiceFrom, waFrom });
   } catch (err) {
+    if (err.status === 409) {
+      return res.status(409).json({ error: 'Task already claimed' });
+    }
     next(err);
   }
 });
@@ -30,8 +29,7 @@ router.post('/release', async (req, res, next) => {
     return res.status(400).json({ error: 'conversationId and token required' });
   }
   try {
-    await state.release(conversationId, token);
-    await state.upsert(conversationId, { locked: false });
+    await state.release(req.tenantId, conversationId, token);
     res.json({ released: true });
   } catch (err) {
     next(err);
