@@ -17,6 +17,7 @@ import tasks from './routes/tasks.js';
 import ai from './routes/ai.js';
 import tokenRoutes from './routes/tokens.js';
 import twilioWebhooks from './routes/twilio.webhooks.js';
+import tenantsRoute from './routes/tenants.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/tasks', tasks);
 app.use('/ai', ai);
 app.use('/tokens', tokenRoutes);
 // Firma Twilio se verifica aquí antes de entrar al router
+app.use('/tenants', tenantsRoute);
 app.use('/webhooks/twilio', verifyTwilioSignature, twilioWebhooks);
 
 // centralized error handler

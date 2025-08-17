@@ -1,11 +1,9 @@
 import twilio from 'twilio';
 
 /**
- * Create Twilio REST clients for a tenant.
- * @param {Object} tenant - Tenant configuration containing Twilio credentials.
- * @returns {Object} Object containing the Twilio client instance and helpers.
+ * Crea clientes Twilio por tenant.
  */
-function makeTwilioClients(tenant = {}) {
+export function makeTwilioClients(tenant = {}) {
   const {
     accountSid,
     authToken,
@@ -20,10 +18,10 @@ function makeTwilioClients(tenant = {}) {
 
   const client = twilio(accountSid, authToken);
 
-  // SDK v5: TaskRouter v1
+  // TaskRouter v1 (SDK v5)
   const taskrouter = workspaceSid ? client.taskrouter.v1.workspaces(workspaceSid) : null;
 
-  // Conversations/Video helpers (usaremos .v1 en rutas)
+  // Conversations/Video helpers
   const conversations = client.conversations;
   const video = client.video;
 
@@ -32,5 +30,3 @@ function makeTwilioClients(tenant = {}) {
 
   return { client, taskrouter, conversations, video, voiceFrom, waFrom };
 }
-
-export { makeTwilioClients };

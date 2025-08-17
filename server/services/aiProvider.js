@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import * as CRM from './crm.js';
 
 function getClient(tenant = {}) {
-  const apiKey = tenant.ai?.openaiApiKey;
+  const apiKey = tenant.ai?.openaiApiKey || process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error('OpenAI API key is not configured');
   }
@@ -30,28 +30,24 @@ const tools = [
       parameters: {
         type: 'object',
         properties: {
-          phone: {
-            type: 'string',
-            description: 'E.164 formatted phone number',
-          },
+          phone: { type: 'string', description: 'E.164 formatted phone number' }
         },
-        required: ['phone'],
-      },
-    },
-  },
+        required: ['phone']
+      }
+    }
+  }
 ];
 
-async function generateReply({ tenant = {}, model = 'gpt-4o-mini', userMsg, fromPhone }) {
-  if (!userMsg) {
-    throw new Error('userMsg is required');
-  }
+export async function generateReply({ tenant = {}, model = 'gpt-4o-mini', userMsg, fromPhone }) {
+  if (!userMsg) throw new Error('userMsg is required');
+
   const client = getClient(tenant);
 
-  let customer;
+  let customer = null;
   if (fromPhone) {
     try {
       customer = await CRM.getByPhone(tenant, fromPhone);
-    } catch (err) {
+    } catch {
       customer = null;
     }
   }
@@ -59,18 +55,16 @@ async function generateReply({ tenant = {}, model = 'gpt-4o-mini', userMsg, from
   const systemPrompt = buildSystemPrompt(customer);
   const messages = [
     { role: 'system', content: systemPrompt },
-    { role: 'user', content: userMsg },
+    { role: 'user', content: userMsg }
   ];
 
   const completion = await client.chat.completions.create({
     model,
     messages,
     tools,
-    temperature: 0.2,
+    temperature: 0.2
   });
 
-  const choice = completion.choices && completion.choices[0];
-  return choice && choice.message && choice.message.content ? choice.message.content.trim() : '';
+  const choice = completion.choices?.[0];
+  return choice?.message?.content ? choice.message.content.trim() : '';
 }
-
-export { generateReply };

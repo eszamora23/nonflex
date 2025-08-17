@@ -5,22 +5,69 @@ import { auth } from '../lib/auth.js';
 
 const router = express.Router();
 
-// All task routes require JWT auth
+// Todas requieren JWT
 router.use(auth);
 
-// Placeholder route for creating a task via TaskRouter
-router.post('/create', (req, res) => {
-  // TODO: integrate with TaskRouter to create tasks
-  res.status(501).json({ error: 'Not implemented' });
+/**
+ * Crea una Task en TaskRouter (voz) con atributos básicos.
+ * body: { channel?, dept?, lang?, attributes? }
+ */
+router.post('/create', async (req, res, next) => {
+  try {
+    const { twilio: tcfg } = req.tenant || {};
+    if (!tcfg?.workspaceSid || !tcfg?.workflowSid) {
+      return res.status(400).json({ error: 'TaskRouter not configured for tenant' });
+    }
+
+    const { taskrouter } = makeTwilioClients(req.tenant);
+    const { channel = 'voice', dept = 'soporte', lang = 'es', attributes = {} } = req.body || {};
+    const attrs = { channel, dept, lang, ...attributes };
+
+    const task = await taskrouter.tasks.create({
+      workflowSid: tcfg.workflowSid,
+      attributes: JSON.stringify(attrs)
+    });
+
+    return res.status(201).json({ taskSid: task.sid, attributes: attrs });
+  } catch (err) {
+    next(err);
+  }
 });
 
-// Placeholder route for listing tasks from TaskRouter
-router.get('/list', (req, res) => {
-  // TODO: integrate with TaskRouter to list tasks
-  res.json({ tasks: [] });
+/**
+ * Lista Tasks del Workspace (pendientes por defecto).
+ * query: assignmentStatus (pending,reserved,assigned,wrapping,completed,canceled)
+ */
+router.get('/list', async (req, res, next) => {
+  try {
+    const { twilio: tcfg } = req.tenant || {};
+    if (!tcfg?.workspaceSid) {
+      return res.status(400).json({ error: 'TaskRouter not configured for tenant' });
+    }
+    const { taskrouter } = makeTwilioClients(req.tenant);
+    const assignmentStatus = req.query.assignmentStatus || 'pending';
+    const tasks = await taskrouter.tasks.list({ assignmentStatus, limit: 50 });
+    const out = tasks.map(t => ({
+      sid: t.sid,
+      status: t.assignmentStatus,
+      age: t.age,
+      priority: t.priority,
+      attributes: safeParse(t.attributes)
+    }));
+    return res.json({ tasks: out });
+  } catch (err) {
+    next(err);
+  }
 });
 
-// Claim a conversation/task by acquiring a lock
+function safeParse(v) {
+  try { return JSON.parse(v || '{}'); } catch { return {}; }
+}
+
+/**
+ * Claim de conversación/chat (desactiva IA y bloquea)
+ * body: { conversationSid | conversationId }
+ */
 router.post('/claim', async (req, res, next) => {
   const conversationId = req.body.conversationSid || req.body.conversationId;
   if (!conversationId) {
@@ -54,7 +101,10 @@ router.post('/claim', async (req, res, next) => {
   }
 });
 
-// Release a previously claimed conversation/task
+/**
+ * Release de la conversación/chat
+ * body: { conversationSid|conversationId, token, aiEnabled? }
+ */
 router.post('/release', async (req, res, next) => {
   const { aiEnabled = true } = req.body;
   const conversationId = req.body.conversationSid || req.body.conversationId;
@@ -66,7 +116,6 @@ router.post('/release', async (req, res, next) => {
   try {
     const { conversations } = makeTwilioClients(req.tenant);
 
-    // Fetch, update attrs.aiEnabled=aiEnabled
     const convo = await conversations.v1.conversations(conversationId).fetch();
     const attrs = convo.attributes ? JSON.parse(convo.attributes) : {};
     attrs.aiEnabled = !!aiEnabled;
