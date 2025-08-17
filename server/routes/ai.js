@@ -6,17 +6,19 @@ const router = express.Router();
 
 // Generate AI reply for a user message
 router.post('/reply', auth, async (req, res, next) => {
-  const { userMsg, fromPhone } = req.body;
+  const { userMsg, fromPhone, conversationId, aiEnabled = true } = req.body;
   if (!userMsg) {
     return res.status(400).json({ error: 'userMsg required' });
   }
   try {
-    const reply = await aiProvider.generateReply({
+    const { reply, handoff } = await aiProvider.generateReply({
       tenant: req.tenant,
       userMsg,
       fromPhone,
+      conversationId,
+      aiEnabled,
     });
-    res.json({ reply });
+    res.json({ reply, handoff });
   } catch (err) {
     next(err);
   }

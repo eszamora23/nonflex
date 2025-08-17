@@ -4,7 +4,7 @@ async function getFetch() {
   return mod.default;
 }
 
-async function request(tenant = {}, path = '') {
+async function request(tenant = {}, path = '', options = {}) {
   const baseUrl = tenant.crmBaseUrl || process.env.CRM_BASE_URL;
   if (!baseUrl) throw new Error('CRM base URL is not configured');
 
@@ -12,7 +12,7 @@ async function request(tenant = {}, path = '') {
   const url = `${baseUrl}${path}`;
   const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
   const fetchFn = await getFetch();
-  const res = await fetchFn(url, { headers });
+  const res = await fetchFn(url, { ...options, headers: { ...headers, ...(options.headers || {}) } });
   if (!res.ok) {
     throw new Error(`CRM request failed with status ${res.status}`);
   }
@@ -49,4 +49,12 @@ export async function getByExternalId(tenant, externalId) {
 
 export async function getOrderById(tenant, orderId) {
   return request(tenant, `/orders/${encodeURIComponent(orderId)}`);
+}
+
+export async function createTicket(tenant, data) {
+  return request(tenant, '/tickets', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data || {}),
+  });
 }
