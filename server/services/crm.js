@@ -19,12 +19,32 @@ async function request(tenant = {}, path = '') {
   return res.json();
 }
 
+function mapCustomer(data = {}) {
+  return {
+    externalId: data.externalId ?? data.id,
+    profile: {
+      firstName: data.firstName ?? data.profile?.firstName,
+      lastName: data.lastName ?? data.profile?.lastName,
+      email: data.email ?? data.profile?.email,
+      phone: data.phone ?? data.profile?.phone,
+    },
+    phones: data.phones ?? (data.phone ? [data.phone] : []),
+    language: data.language,
+    tier: data.tier,
+    notes: data.notes,
+    addresses: data.addresses ?? [],
+    orders: data.orders ?? [],
+  };
+}
+
 export async function getByPhone(tenant, phone) {
-  return request(tenant, `/contacts/phone/${encodeURIComponent(phone)}`);
+  const data = await request(tenant, `/contacts/phone/${encodeURIComponent(phone)}`);
+  return mapCustomer(data);
 }
 
 export async function getByExternalId(tenant, externalId) {
-  return request(tenant, `/contacts/${encodeURIComponent(externalId)}`);
+  const data = await request(tenant, `/contacts/${encodeURIComponent(externalId)}`);
+  return mapCustomer(data);
 }
 
 export async function getOrderById(tenant, orderId) {
