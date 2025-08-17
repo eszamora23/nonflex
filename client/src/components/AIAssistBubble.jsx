@@ -1,3 +1,6 @@
+import useAgentStore from '../store/useAgentStore';
+
 export default function AIAssistBubble() {
-  return <div>AI Assist Bubble Component</div>;
+  const { aiEnabled } = useAgentStore();
+  return <div>AI Assist: {aiEnabled ? 'Enabled' : 'Disabled'}</div>;
 }
