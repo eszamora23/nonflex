@@ -24,8 +24,8 @@ router.post('/conversations', async (req, res, next) => {
     });
 
     if (reply) {
-      const { client } = makeTwilioClients(req.tenant);
-      await client.conversations.v1
+      const { conversations } = makeTwilioClients(req.tenant);
+      await conversations.v1
         .conversations(ConversationSid)
         .messages.create({ author: 'bot', body: reply });
     }

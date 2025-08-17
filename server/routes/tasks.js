@@ -1,5 +1,6 @@
 const express = require('express');
 const state = require('../services/state');
+const { makeTwilioClients } = require('../services/twilio');
 
 const router = express.Router();
 
@@ -14,8 +15,9 @@ router.post('/claim', async (req, res, next) => {
     if (!token) {
       return res.status(409).json({ error: 'Task already claimed' });
     }
+    const { voiceFrom, waFrom } = makeTwilioClients(req.tenant);
     await state.upsert(conversationId, { locked: true });
-    res.json({ token });
+    res.json({ token, voiceFrom, waFrom });
   } catch (err) {
     next(err);
   }
