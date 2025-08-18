@@ -108,9 +108,38 @@ async function seed() {
     const customers = await Customer.insertMany(customersData);
 
     const orders = [
-      { tenant: TENANT, customer: customers[0]._id, productId: 'SKU123', quantity: 1, price: 49.99, status: 'shipped' },
-      { tenant: TENANT, customer: customers[0]._id, productId: 'SKU124', quantity: 2, price: 29.99, status: 'processing' },
-      { tenant: TENANT, customer: customers[1]._id, productId: 'SKU200', quantity: 1, price: 99.99, status: 'delivered' },
+      {
+        tenant: TENANT,
+        customer: customers[0]._id,
+        orderId: 'ORD-1000',
+        items: [{ sku: 'SKU123', name: 'Widget', qty: 1 }],
+        total: 49.99,
+        carrier: 'UPS',
+        tracking: '1Z999AA10123456784',
+        status: 'shipped',
+      },
+      {
+        tenant: TENANT,
+        customer: customers[0]._id,
+        orderId: 'ORD-1001',
+        items: [
+          { sku: 'SKU124', name: 'Gadget', qty: 2 }
+        ],
+        total: 59.98,
+        carrier: 'FedEx',
+        tracking: '999999999999',
+        status: 'processing',
+      },
+      {
+        tenant: TENANT,
+        customer: customers[1]._id,
+        orderId: 'ORD-2000',
+        items: [{ sku: 'SKU200', name: 'Thingamajig', qty: 1 }],
+        total: 99.99,
+        carrier: 'USPS',
+        tracking: '9400111899223857266349',
+        status: 'delivered',
+      },
     ];
 
     await Order.insertMany(orders);
