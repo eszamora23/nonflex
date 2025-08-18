@@ -27,7 +27,17 @@ router.get('/:id/orders', async (req, res, next) => {
 
 router.post('/:id/orders', async (req, res, next) => {
   try {
-    const order = await Order.create({ ...req.body, tenant: req.tenantId, customer: req.params.id });
+    const { orderId, items = [], total, carrier, tracking, status } = req.body;
+    const order = await Order.create({
+      tenant: req.tenantId,
+      customer: req.params.id,
+      orderId,
+      items,
+      total,
+      carrier,
+      tracking,
+      status,
+    });
     res.status(201).json(order);
   } catch (err) {
     next(err);

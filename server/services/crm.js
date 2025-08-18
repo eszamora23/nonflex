@@ -19,6 +19,17 @@ async function request(tenant = {}, path = '', options = {}) {
   return res.json();
 }
 
+function mapOrder(o = {}) {
+  return {
+    orderId: o.orderId ?? o.id,
+    items: o.items ?? [],
+    total: o.total,
+    carrier: o.carrier,
+    tracking: o.tracking,
+    status: o.status,
+  };
+}
+
 function mapCustomer(data = {}) {
   return {
     externalId: data.externalId ?? data.id,
@@ -33,7 +44,7 @@ function mapCustomer(data = {}) {
     tier: data.tier,
     notes: data.notes,
     addresses: data.addresses ?? [],
-    orders: data.orders ?? [],
+    orders: (data.orders ?? []).map(mapOrder),
   };
 }
 
@@ -48,7 +59,8 @@ export async function getByExternalId(tenant, externalId) {
 }
 
 export async function getOrderById(tenant, orderId) {
-  return request(tenant, `/orders/${encodeURIComponent(orderId)}`);
+  const data = await request(tenant, `/orders/${encodeURIComponent(orderId)}`);
+  return mapOrder(data);
 }
 
 export async function createTicket(tenant, data) {
