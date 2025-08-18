@@ -3,6 +3,7 @@ import twilio from 'twilio';
 import { generateReply } from '../services/aiProvider.js';
 import { makeTwilioClients } from '../services/twilio.js';
 import * as state from '../services/state.js';
+import audit from '../services/audit.js';
 
 const router = express.Router();
 
@@ -64,13 +65,86 @@ router.post('/conversations', async (req, res, next) => {
 });
 
 /**
+ * Callback de estado de Conversations
+ */
+router.post('/conversations/status', async (req, res, next) => {
+  const { ConversationSid, EventType } = req.body || {};
+  try {
+    await state.upsert(ConversationSid, {
+      lastEvent: EventType,
+      updatedBy: 'webhook.conversations.status',
+    });
+    audit.log('conversations.status', {
+      tenant: req.tenant?.id || null,
+      conversationId: ConversationSid,
+      event: EventType,
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * Webhook de Voice (Studio/IVR → TwiML simple)
  */
-router.post('/voice', (req, res) => {
-  const response = new twilio.twiml.VoiceResponse();
-  response.say('Thank you for calling. Please hold while we connect you.');
-  res.type('text/xml');
-  res.send(response.toString());
+router.post('/voice', async (req, res, next) => {
+  try {
+    const response = new twilio.twiml.VoiceResponse();
+    response.say('Thank you for calling. Please hold while we connect you.');
+
+    const { twilio: tcfg } = req.tenant || {};
+    if (tcfg?.workspaceSid && tcfg?.workflowSid) {
+      const { taskrouter } = makeTwilioClients(req.tenant);
+      const attrs = {
+        channel: 'voice',
+        from: req.body?.From,
+        to: req.body?.To,
+        callSid: req.body?.CallSid,
+      };
+      const task = await taskrouter.tasks.create({
+        workflowSid: tcfg.workflowSid,
+        attributes: JSON.stringify(attrs),
+      });
+      audit.log('voice.task.create', {
+        tenant: req.tenant?.id || null,
+        callSid: req.body?.CallSid || null,
+        taskSid: task.sid,
+        attributes: attrs,
+      });
+      await state.upsert(req.body?.CallSid, {
+        taskSid: task.sid,
+        lastEvent: 'task.created',
+        updatedBy: 'webhook.voice',
+      });
+    }
+
+    res.type('text/xml');
+    res.send(response.toString());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Callback de estado de Voice
+ */
+router.post('/voice/status', async (req, res, next) => {
+  const { CallSid, CallStatus } = req.body || {};
+  try {
+    await state.upsert(CallSid, {
+      lastEvent: CallStatus,
+      updatedBy: 'webhook.voice.status',
+    });
+    audit.log('voice.status', {
+      tenant: req.tenant?.id || null,
+      callSid: CallSid,
+      status: CallStatus,
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;
