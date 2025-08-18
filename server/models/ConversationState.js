@@ -6,4 +6,7 @@ const ConversationStateSchema = new mongoose.Schema({
   locked: { type: Boolean, default: false },
 }, { timestamps: true });
 
+// Index for quick lookups by conversationId
+ConversationStateSchema.index({ conversationId: 1 });
+
 export default mongoose.model('ConversationState', ConversationStateSchema);
