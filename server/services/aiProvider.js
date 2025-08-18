@@ -12,7 +12,7 @@ function getClient(tenant = {}) {
 }
 
 function buildSystemPrompt(customer) {
-  let prompt = 'You are a helpful customer support assistant. Use the provided context to answer user messages accurately and concisely. If the question is outside of your knowledge or violates policy, respond that you cannot help.';
+  let prompt = 'Eres un asistente de soporte para Acme Retail. Responde en español de forma precisa y concisa utilizando la información disponible. Si el cliente presenta una queja, solicita un reembolso o faltan datos para ayudarle, debes transferir la conversación a un agente humano.';
   if (customer) {
     const parts = [];
     if (customer.name) parts.push(`Name: ${customer.name}`);

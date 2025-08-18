@@ -4,7 +4,7 @@ const piiRegexes = [
 ];
 
 const offensiveWords = ['fuck','shit','idiot','stupid'];
-const handoffKeywords = ['agent','humano','human','representante','person'];
+const handoffKeywords = ['agent','humano','human','representante','person','reembolso','reembolsos','queja','quejas'];
 
 export function checkContent(text = '') {
   const lower = text.toLowerCase();
