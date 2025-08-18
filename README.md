@@ -12,8 +12,8 @@ own flexible customer‑care platform.
 ### Backend (`server/`)
 - Node.js + Express service exposing routes for agents, customers, tasks, AI and
   Twilio webhooks.
-- Middleware `tenantResolver` reads an `X-Tenant-Id` header and attaches
-  tenant configuration from `infra/tenants.json`, including `twilio` and optional `ai` sections.
+- Middleware `tenantResolver` resolves the tenant from the request subdomain or an `X-Tenant-Id` header (subdomain wins) and
+  attaches tenant configuration from `infra/tenants.json`, including `twilio` and optional `ai` sections.
 - Connects to MongoDB, Redis, external CRM and Twilio APIs.
 
 ### Frontend (`client/`)
@@ -26,7 +26,8 @@ own flexible customer‑care platform.
 
 ### Multi-tenant approach
 - Tenants are defined in `infra/tenants.json`.
-- API requests include an `X-Tenant-Id` header to select the tenant.
+- The server determines the tenant using the request subdomain (e.g., `<tenant>.example.com`) or an `X-Tenant-Id` header.
+- Subdomains take precedence; when neither is provided, `DEFAULT_TENANT` is used.
 - Each tenant supplies unique CRM, Twilio, and optional AI credentials via configuration.
 
 ## Environment Variables
